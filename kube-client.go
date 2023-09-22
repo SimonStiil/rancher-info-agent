@@ -3,6 +3,7 @@ package main
 import (
 	"context"
 	"log"
+	"os"
 	"time"
 
 	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -228,6 +229,10 @@ func (kube *KubeClient) CetClusters() ([]Cluster, error) {
 }
 
 func (kube *KubeClient) newConfig() error {
+
+	if _, err := os.Stat(kube.Kubeconfig); err != nil {
+		kube.Kubeconfig = ""
+	}
 	config, err := clientcmd.BuildConfigFromFlags("", kube.Kubeconfig)
 	if err != nil {
 		return err
