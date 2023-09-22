@@ -1,175 +1,114 @@
 package main
 
 import (
+	"encoding/json"
 	"flag"
+	"log"
+	"net/http"
 	"path/filepath"
 
-	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
-	"k8s.io/apimachinery/pkg/watch"
-	"k8s.io/client-go/kubernetes"
-	"k8s.io/client-go/kubernetes/scheme"
-	"k8s.io/client-go/rest"
-	"k8s.io/client-go/tools/clientcmd"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promauto"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 	"k8s.io/client-go/util/homedir"
-
-	v3 "github.com/rancher/rancher/pkg/apis/management.cattle.io/v3"
-	"k8s.io/apimachinery/pkg/runtime"
-	"k8s.io/apimachinery/pkg/runtime/schema"
-	"k8s.io/apimachinery/pkg/runtime/serializer"
 )
-
-const (
-	GroupName    = "management.cattle.io"
-	GroupVersion = "v3"
-)
-
-var SchemeGroupVersion = schema.GroupVersion{Group: GroupName, Version: GroupVersion}
 
 var (
-	SchemeBuilder = runtime.NewSchemeBuilder(addKnownTypes)
-	AddToScheme   = SchemeBuilder.AddToScheme
+	debug              bool
+	prometheusEnabled  bool
+	prometheusEndpoint string
+	healthEndpoint     string
+	kubeconfig         string
+	port               string
+	requests           = promauto.NewCounterVec(prometheus.CounterOpts{
+		Name: "http_endpoint_equests_count",
+		Help: "The amount of requests to an endpoint",
+	}, []string{"endpoint", "method"},
+	)
+	client KubeClient
 )
 
-func addKnownTypes(scheme *runtime.Scheme) error {
-	scheme.AddKnownTypes(SchemeGroupVersion,
-		&v3.Project{},
-		&v3.ProjectList{},
-		&v3.Cluster{},
-		&v3.ClusterList{},
-	)
-
-	metav1.AddToGroupVersion(scheme, SchemeGroupVersion)
-	return nil
+type Health struct {
+	Status string `json:"status"`
 }
 
-type CattleManagementV3Interface interface {
-	Project(namespace string) ProjectInterface
-	Projects(namespace string) ProjectInterface
-	Cluster() ProjectInterface
-	Clusters() ProjectInterface
+func HealthActuator(w http.ResponseWriter, r *http.Request) {
+	if prometheusEnabled {
+		requests.WithLabelValues(r.URL.EscapedPath(), r.Method).Inc()
+	}
+	if !(r.URL.Path == healthEndpoint) {
+		log.Printf("@I %v %v %v - HealthActuator\n", r.Method, r.URL.Path, 404)
+		http.NotFoundHandler().ServeHTTP(w, r)
+		return
+	}
+	reply := Health{Status: "UP"}
+	log.Printf("@I %v %v %v - HealthActuator\n", r.Method, r.URL.Path, 200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(reply)
+	return
 }
 
-type CattleManagementV3Client struct {
-	restClient rest.Interface
-}
-
-func NewForConfig(c *rest.Config) (*CattleManagementV3Client, error) {
-	config := *c
-	config.ContentConfig.GroupVersion = &schema.GroupVersion{Group: GroupName, Version: GroupVersion}
-	config.APIPath = "/apis"
-	config.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: scheme.Codecs}
-	config.UserAgent = rest.DefaultKubernetesUserAgent()
-
-	client, err := rest.RESTClientFor(&config)
+func MainHandler(w http.ResponseWriter, r *http.Request) {
+	if prometheusEnabled {
+		requests.WithLabelValues(r.URL.EscapedPath(), r.Method).Inc()
+	}
+	if !(r.URL.Path == "/") {
+		log.Printf("@I %v %v %v - Main Handler\n", r.Method, r.URL.Path, 404)
+		http.NotFoundHandler().ServeHTTP(w, r)
+		return
+	}
+	clusterList, err := client.CetClusters()
 	if err != nil {
-		return nil, err
+		w.WriteHeader(http.StatusInternalServerError)
+		w.Write([]byte("500 Internal Server Error"))
+		log.Printf("@I %v %v %v - Main Handler Request Error - %+v\n", r.Method, r.URL.Path, 500, err.Error())
+		return
 	}
-
-	return &CattleManagementV3Client{restClient: client}, nil
-}
-
-func (c *CattleManagementV3Client) Projects(namespace string) ProjectInterface {
-	return &projectClient{
-		restClient: c.restClient,
-		ns:         namespace,
-	}
-}
-
-type ProjectInterface interface {
-	List(opts metav1.ListOptions) (*v3.ProjectList, error)
-	Get(name string, options metav1.GetOptions) (*v3.Project, error)
-	Create(*v3.Project) (*v3.Project, error)
-	Watch(opts metav1.ListOptions) (watch.Interface, error)
-}
-
-type projectClient struct {
-	restClient rest.Interface
-	ns         string
-}
-
-func (c *projectClient) List(opts metav1.ListOptions) (*v3.ProjectList, error) {
-	result := v3.ProjectList{}
-	err := c.restClient.
-		Get().
-		Namespace(c.ns).
-		Resource("projects").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Do().
-		Into(&result)
-
-	return &result, err
-}
-
-func (c *projectClient) Get(name string, opts metav1.GetOptions) (*v3.Project, error) {
-	result := v3.Project{}
-	err := c.restClient.
-		Get().
-		Namespace(c.ns).
-		Resource("projects").
-		Name(name).
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Do().
-		Into(&result)
-
-	return &result, err
-}
-
-func (c *projectClient) Create(project *v3.Project) (*v3.Project, error) {
-	result := v3.Project{}
-	err := c.restClient.
-		Post().
-		Namespace(c.ns).
-		Resource("projects").
-		Body(project).
-		Do().
-		Into(&result)
-
-	return &result, err
-}
-
-func (c *projectClient) Watch(opts metav1.ListOptions) (watch.Interface, error) {
-	opts.Watch = true
-	return c.restClient.
-		Get().
-		Namespace(c.ns).
-		Resource("projects").
-		VersionedParams(&opts, scheme.ParameterCodec).
-		Watch()
+	log.Printf("@I %v %v %v - Main Handler\n", r.Method, r.URL.Path, 200)
+	w.Header().Set("Content-Type", "application/json")
+	json.NewEncoder(w).Encode(clusterList)
+	return
 }
 
 func main() {
-	var kubeconfig *string
+	flag.BoolVar(&debug, "debug", false, "Enable/(Disable) Debugging output")
+	flag.StringVar(&port, "port", "8080", "port to use for the service (8080)")
+	flag.BoolVar(&prometheusEnabled, "prometheus", true, "(Enable)/Disable Prometheus endpoint")
+	flag.StringVar(&prometheusEndpoint, "prometheusEndpoint", "/metrics", "custom prometheus endpoint (/metrics)")
+	flag.StringVar(&healthEndpoint, "healthEndpoint", "/health", "custom health endpoint (/health)")
+
 	if home := homedir.HomeDir(); home != "" {
-		kubeconfig = flag.String("kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
+		flag.StringVar(&kubeconfig, "kubeconfig", filepath.Join(home, ".kube", "config"), "(optional) absolute path to the kubeconfig file")
 	} else {
-		kubeconfig = flag.String("kubeconfig", "", "absolute path to the kubeconfig file")
+		flag.StringVar(&kubeconfig, "kubeconfig", "", "absolute path to the kubeconfig file")
 	}
 	flag.Parse()
-
-	// use the current context in kubeconfig
-	config, err := clientcmd.BuildConfigFromFlags("", *kubeconfig)
-	if err != nil {
-		panic(err.Error())
+	if debug {
+		log.Println("@D Debugging enabled")
+	}
+	if prometheusEnabled {
+		log.Printf("@I Metrics enabled at %v\n", prometheusEndpoint)
+		http.Handle(prometheusEndpoint, promhttp.Handler())
 	}
 
-	// create the clientset
-	clientset, err := kubernetes.NewForConfig(config)
-	if err != nil {
-		panic(err.Error())
-	}
-	AddToScheme(scheme.Scheme)
-	crdConfig := *config
-	crdConfig.ContentConfig.GroupVersion = &schema.GroupVersion{Group: GroupName, Version: GroupVersion}
-	crdConfig.APIPath = "/apis"
-	crdConfig.NegotiatedSerializer = serializer.DirectCodecFactory{CodecFactory: scheme.Codecs}
-	crdConfig.UserAgent = rest.DefaultKubernetesUserAgent()
+	client = KubeClient{Kubeconfig: kubeconfig, Debug: debug}
+	http.HandleFunc(healthEndpoint, HealthActuator)
+	http.HandleFunc("/", MainHandler)
 
-	exampleRestClient, err := rest.UnversionedRESTClientFor(&crdConfig)
+	log.Printf("@I Serving on port %v\n", port)
+	log.Fatal(http.ListenAndServe(":"+port, nil))
+	/*
+		clusterList, err := client.CetClusters()
+		if err != nil {
+			panic(err)
+		}
 
-	result := v3.ProjectList{}
-	err := exampleRestClient.
-		Get().
-		Resource("clusters").
-		Do().
-		Into(&result)
+		data, err := json.Marshal(clusterList)
+		if err != nil {
+			panic(err)
+		}
+		if debug {
+			log.Printf("@D clusters found: %+v\n", string(data))
+		}
+	*/
 }
