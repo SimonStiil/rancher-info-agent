@@ -233,11 +233,21 @@ func (kube *KubeClient) newConfig() error {
 	if _, err := os.Stat(kube.Kubeconfig); err != nil {
 		kube.Kubeconfig = ""
 	}
-	config, err := clientcmd.BuildConfigFromFlags("", kube.Kubeconfig)
-	if err != nil {
-		return err
+	var config *rest.Config
+	var err error
+	if kube.Kubeconfig != "" {
+		log.Printf("@I Using kubeconfig in: %v\n", kube.Kubeconfig)
+		config, err = clientcmd.BuildConfigFromFlags("", kube.Kubeconfig)
+		if err != nil {
+			return err
+		}
+	} else {
+		config, err = rest.InClusterConfig()
+		log.Println("@I Using in Cluster Configuration")
+		if err != nil {
+			return err
+		}
 	}
-
 	clientset, err := NewForConfig(config)
 	if err != nil {
 		return err
