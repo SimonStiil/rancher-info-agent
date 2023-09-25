@@ -20,7 +20,7 @@ type CattleManagementV3Interface interface {
 	// https://github.com/rancher/rancher/blob/release/v2.8/pkg/apis/management.cattle.io/v3/authz_types.go#L31
 	Project(namespace string) ProjectInterface
 	// https://github.com/rancher/rancher/blob/release/v2.8/pkg/apis/management.cattle.io/v3/cluster_types.go#L100C6-L100C13
-	//Cluster() ProjectInterface
+	Cluster() ClusterInterface
 }
 
 type CattleManagementV3Client struct {
@@ -29,7 +29,7 @@ type CattleManagementV3Client struct {
 
 // https://www.martin-helmich.de/en/blog/kubernetes-crd-client.html
 // https://devpress.csdn.net/k8s/62ebdfa589d9027116a0fa54.html
-func NewForConfig(c *rest.Config) (*CattleManagementV3Client, error) {
+func NewForConfig(c *rest.Config) (CattleManagementV3Interface, error) {
 	config := *c
 	config.ContentConfig.GroupVersion = &v3.SchemeGroupVersion
 	config.APIPath = "/apis"
@@ -40,7 +40,6 @@ func NewForConfig(c *rest.Config) (*CattleManagementV3Client, error) {
 	if err != nil {
 		return nil, err
 	}
-
 	return &CattleManagementV3Client{restClient: client}, nil
 }
 
@@ -190,7 +189,7 @@ type Project struct {
 type KubeClient struct {
 	Kubeconfig string
 	Debug      bool
-	client     *CattleManagementV3Client
+	client     CattleManagementV3Interface
 	context    context.Context
 	age        time.Time
 	lastResult []Cluster

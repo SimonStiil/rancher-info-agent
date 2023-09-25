@@ -20,6 +20,7 @@ var (
 	healthEndpoint     string
 	kubeconfig         string
 	port               string
+	onlyRootEndpoint   bool
 	requests           = promauto.NewCounterVec(prometheus.CounterOpts{
 		Name: "http_endpoint_equests_count",
 		Help: "The amount of requests to an endpoint",
@@ -52,10 +53,12 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 	if prometheusEnabled {
 		requests.WithLabelValues(r.URL.EscapedPath(), r.Method).Inc()
 	}
-	if !(r.URL.Path == "/") {
-		log.Printf("@I %v %v %v - Main Handler\n", r.Method, r.URL.Path, 404)
-		http.NotFoundHandler().ServeHTTP(w, r)
-		return
+	if onlyRootEndpoint {
+		if !(r.URL.Path == "/") {
+			log.Printf("@I %v %v %v - Main Handler\n", r.Method, r.URL.Path, 404)
+			http.NotFoundHandler().ServeHTTP(w, r)
+			return
+		}
 	}
 	clusterList, err := client.CetClusters()
 	if err != nil {
@@ -73,6 +76,7 @@ func MainHandler(w http.ResponseWriter, r *http.Request) {
 func main() {
 	flag.BoolVar(&debug, "debug", false, "Enable/(Disable) Debugging output")
 	flag.StringVar(&port, "port", "8080", "port to use for the service (8080)")
+	flag.BoolVar(&onlyRootEndpoint, "onlyRootEndpoint", false, "Enable/(Disable) Only reply json on / endpoint")
 	flag.BoolVar(&prometheusEnabled, "prometheus", true, "(Enable)/Disable Prometheus endpoint")
 	flag.StringVar(&prometheusEndpoint, "prometheusEndpoint", "/metrics", "custom prometheus endpoint (/metrics)")
 	flag.StringVar(&healthEndpoint, "healthEndpoint", "/health", "custom health endpoint (/health)")
@@ -97,18 +101,4 @@ func main() {
 
 	log.Printf("@I Serving on port %v\n", port)
 	log.Fatal(http.ListenAndServe(":"+port, nil))
-	/*
-		clusterList, err := client.CetClusters()
-		if err != nil {
-			panic(err)
-		}
-
-		data, err := json.Marshal(clusterList)
-		if err != nil {
-			panic(err)
-		}
-		if debug {
-			log.Printf("@D clusters found: %+v\n", string(data))
-		}
-	*/
 }
