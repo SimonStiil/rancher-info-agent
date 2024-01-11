@@ -10,6 +10,8 @@ require (
 	k8s.io/client-go v12.0.0+incompatible
 )
 
+require github.com/gorilla/websocket v1.5.0 // indirect
+
 require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/blang/semver/v4 v4.0.0 // indirect
@@ -46,7 +48,9 @@ require (
 	github.com/rancher/gke-operator v1.2.0-rc1 // indirect
 	github.com/rancher/lasso v0.0.0-20230830164424-d684fdeb6f29 // indirect
 	github.com/rancher/norman v0.0.0-20230831160711-5de27f66385d // indirect
+	github.com/rancher/rancher/pkg/client v0.0.0-20231221182547-00ffe87e7cf7
 	github.com/rancher/rke v1.5.0-rc5 // indirect
+	github.com/rancher/types v0.0.0-20220328215343-4370ff10ecd5
 	github.com/rancher/wrangler v1.1.1 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
 	github.com/spf13/pflag v1.0.5 // indirect
