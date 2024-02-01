@@ -5,7 +5,7 @@ go 1.21.0
 replace k8s.io/client-go => github.com/rancher/client-go v1.27.4-rancher1
 
 require (
-	github.com/rancher/rancher/pkg/apis v0.0.0-20230921211342-9129a7b0496c
+	github.com/rancher/rancher/pkg/apis v0.63.1
 	k8s.io/apimachinery v0.27.5
 	k8s.io/client-go v12.0.0+incompatible
 )
