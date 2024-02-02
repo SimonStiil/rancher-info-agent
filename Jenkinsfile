@@ -9,7 +9,7 @@ podTemplate(yaml: '''
     spec:
       containers:
       - name: kaniko
-        image: gcr.io/kaniko-project/executor:debug
+        image: gcr.io/kaniko-project/executor:v1.20.0-debug
         command:
         - sleep
         args: 
@@ -18,7 +18,7 @@ podTemplate(yaml: '''
         - name: kaniko-secret
           mountPath: /kaniko/.docker
       - name: golang
-        image: golang:alpine
+        image: golang:1.21.6-alpine3.19
         command:
         - sleep
         args: 
@@ -33,8 +33,10 @@ podTemplate(yaml: '''
             path: config.json
 ''') {
   node(POD_LABEL) {
-    stage('checkout SCM') {  
-      checkout scm
+    String gitCommitMessage
+    stage('checkout SCM') {
+      scmData = checkout scm
+      gitCommitMessage = sh(returnStdout: true, script: "git log --format=%B -n 1 ${scmData.GIT_COMMIT}").trim()
     }
     container('golang') {
       stage('UnitTests') {
@@ -52,11 +54,13 @@ podTemplate(yaml: '''
         }
       }
     }
-    stage('Build Docker Image') {
-      container('kaniko') {
-        sh '''
-          /kaniko/executor --force --context `pwd` --log-format text --destination docker.io/simonstiil/rancher-info-agent:$BRANCH_NAME
-        '''
+    if ( !gitCommitMessage.startsWith("renovate/") || ! gitCommitMessage.startsWith("WIP") ) {
+      stage('Build Docker Image') {
+        container('kaniko') {
+          sh '''
+            /kaniko/executor --force --context `pwd` --log-format text --destination docker.io/simonstiil/rancher-info-agent:$BRANCH_NAME
+          '''
+        }
       }
     }
  
