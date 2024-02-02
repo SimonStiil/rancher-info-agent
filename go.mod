@@ -2,7 +2,7 @@ module git.stiil.dk/rancher-info-agent
 
 go 1.21.0
 
-replace k8s.io/client-go => github.com/rancher/client-go v1.27.4-rancher1
+replace k8s.io/client-go => github.com/rancher/client-go v11.0.0+incompatible
 
 require (
 	github.com/rancher/rancher/pkg/apis v0.0.0-20230921211342-9129a7b0496c
