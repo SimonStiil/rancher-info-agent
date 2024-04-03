@@ -1,6 +1,6 @@
 module git.stiil.dk/rancher-info-agent
 
-go 1.21.6
+go 1.22.2
 
 replace k8s.io/client-go => github.com/rancher/client-go v1.28.6-rancher1
 
