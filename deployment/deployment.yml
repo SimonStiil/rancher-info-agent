@@ -15,7 +15,7 @@ spec:
     spec:
       containers:
       - name: agent
-        image: simonstiil/rancher-info-agent:main
+        image: ghcr.io/simonstiil/rancher-info-agent:main
         imagePullPolicy: Always
         ports:
         - containerPort: 8080
