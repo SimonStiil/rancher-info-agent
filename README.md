@@ -26,7 +26,7 @@ responds with a json reply with format
 | -healthEndpoint=\[string\] | custom health endpoint (/health) |
 
 # Download
-Docker image can be fetched from [dockerhub simonstiil/rancher-info-agent](https://hub.docker.com/repository/docker/simonstiil/rancher-info-agent)  
+Docker image can be fetched from [github ghcr.io/simonstiil/rancher-info-agent](https://github.com/SimonStiil/rancher-info-agent/pkgs/container/rancher-info-agent)  
 Can be build with go build .  
 Will also be available as a release in releases in the future
 
