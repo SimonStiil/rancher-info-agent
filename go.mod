@@ -1,6 +1,6 @@
 module git.stiil.dk/rancher-info-agent
 
-go 1.22
+go 1.22.0
 
 toolchain go1.22.2
 
@@ -9,7 +9,7 @@ replace k8s.io/client-go => github.com/rancher/client-go v1.28.6-rancher1
 require (
 	github.com/prometheus/client_golang v1.19.0
 	github.com/rancher/rancher/pkg/apis v0.0.0-20240501135617-dbe409f2e7a2
-	k8s.io/apimachinery v0.29.2
+	k8s.io/apimachinery v0.30.0
 	k8s.io/client-go v12.0.0+incompatible
 )
 
@@ -66,8 +66,8 @@ require (
 	k8s.io/api v0.28.8 // indirect
 	k8s.io/apiserver v0.28.8 // indirect
 	k8s.io/component-base v0.28.8 // indirect
-	k8s.io/klog/v2 v2.110.1 // indirect
-	k8s.io/kube-openapi v0.0.0-20231010175941-2dd684a91f00 // indirect
+	k8s.io/klog/v2 v2.120.1 // indirect
+	k8s.io/kube-openapi v0.0.0-20240228011516-70dd3763d340 // indirect
 	k8s.io/kubernetes v1.28.6 // indirect
 	k8s.io/utils v0.0.0-20230726121419-3b25d923346b // indirect
 	sigs.k8s.io/cli-utils v0.28.0 // indirect
