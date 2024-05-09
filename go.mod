@@ -7,7 +7,7 @@ toolchain go1.22.2
 replace k8s.io/client-go => github.com/rancher/client-go v1.28.6-rancher1
 
 require (
-	github.com/prometheus/client_golang v1.19.0
+	github.com/prometheus/client_golang v1.19.1
 	github.com/rancher/rancher/pkg/apis v0.0.0-20240501135617-dbe409f2e7a2
 	k8s.io/apimachinery v0.30.0
 	k8s.io/client-go v12.0.0+incompatible
