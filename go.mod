@@ -2,14 +2,14 @@ module git.stiil.dk/rancher-info-agent
 
 go 1.22.0
 
-toolchain go1.22.2
+toolchain go1.22.3
 
 replace k8s.io/client-go => github.com/rancher/client-go v1.28.6-rancher1
 
 require (
-	github.com/prometheus/client_golang v1.19.0
-	github.com/rancher/rancher/pkg/apis v0.0.0-20240501135617-dbe409f2e7a2
-	k8s.io/apimachinery v0.30.0
+	github.com/prometheus/client_golang v1.19.1
+	github.com/rancher/rancher/pkg/apis v0.0.0-20240515192151-d85bb0a8c048
+	k8s.io/apimachinery v0.30.1
 	k8s.io/client-go v12.0.0+incompatible
 )
 

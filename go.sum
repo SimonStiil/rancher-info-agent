@@ -86,6 +86,8 @@ github.com/pmezard/go-difflib v1.0.0 h1:4DBwDE0NGyQoBHbLQYPwSUPoCMWR5BEzIk/f1lZb
 github.com/pmezard/go-difflib v1.0.0/go.mod h1:iKH77koFhYxTK1pcRnkKkqfTogsbg7gZNVY4sRDYZ/4=
 github.com/prometheus/client_golang v1.19.0 h1:ygXvpU1AoN1MhdzckN+PyD9QJOSD4x7kmXYlnfbA6JU=
 github.com/prometheus/client_golang v1.19.0/go.mod h1:ZRM9uEAypZakd+q/x7+gmsvXdURP+DABIEIjnmDdp+k=
+github.com/prometheus/client_golang v1.19.1 h1:wZWJDwK+NameRJuPGDhlnFgx8e8HN3XHQeLaYJFJBOE=
+github.com/prometheus/client_golang v1.19.1/go.mod h1:mP78NwGzrVks5S2H6ab8+ZZGJLZUq1hoULYBAYBw1Ho=
 github.com/prometheus/client_model v0.5.0 h1:VQw1hfvPvk3Uv6Qf29VrPF32JB6rtbgI6cYPYQjL0Qw=
 github.com/prometheus/client_model v0.5.0/go.mod h1:dTiFglRmd66nLR9Pv9f0mZi7B7fk5Pm3gvsjB5tr+kI=
 github.com/prometheus/common v0.48.0 h1:QO8U2CdOzSn1BBsmXJXduaaW+dY/5QLjfB8svtSzKKE=
@@ -112,6 +114,8 @@ github.com/rancher/rancher/pkg/apis v0.0.0-20240301191948-d5d96f88c7d5 h1:rox+Ig
 github.com/rancher/rancher/pkg/apis v0.0.0-20240301191948-d5d96f88c7d5/go.mod h1:3IWnlt0kPctD+rG74+A8eeevD+VwLgd+lJ8GDsaK50A=
 github.com/rancher/rancher/pkg/apis v0.0.0-20240501135617-dbe409f2e7a2 h1:CLh9PUZ4y2ZZUW+hfNyVyn26vnKOgAPbW4h8on8cv1I=
 github.com/rancher/rancher/pkg/apis v0.0.0-20240501135617-dbe409f2e7a2/go.mod h1:/sqKj0RakNqVDBbmEETZdDpFB8EoOTZrql1hLlnI5YE=
+github.com/rancher/rancher/pkg/apis v0.0.0-20240515192151-d85bb0a8c048 h1:WB8mP3SCdQzwjoFPMfFJ9Qj0KtblCwAeGiqXozYWjBs=
+github.com/rancher/rancher/pkg/apis v0.0.0-20240515192151-d85bb0a8c048/go.mod h1:JY9b8/9I2RwMd4ef3dIAAbWIaTXB6NTY8TXijq1C0mk=
 github.com/rancher/rke v1.5.3 h1:7mGn+NIL7KXk99NwWYBgoByh2+IfVCdws5ad3X/JIZY=
 github.com/rancher/rke v1.5.3/go.mod h1:wZaVWzW46OTuGvyxgRHXGUyJ/QP0zOkKESO9hBOwTaY=
 github.com/rancher/rke v1.6.0-rc1 h1:4aYfGiG4gxL5k44M3jpDoKfQqI1lxdl4GAVPRMvKMj8=
@@ -228,6 +232,8 @@ k8s.io/apimachinery v0.29.2 h1:EWGpfJ856oj11C52NRCHuU7rFDwxev48z+6DSlGNsV8=
 k8s.io/apimachinery v0.29.2/go.mod h1:6HVkd1FwxIagpYrHSwJlQqZI3G9LfYWRPAkUvLnXTKU=
 k8s.io/apimachinery v0.30.0 h1:qxVPsyDM5XS96NIh9Oj6LavoVFYff/Pon9cZeDIkHHA=
 k8s.io/apimachinery v0.30.0/go.mod h1:iexa2somDaxdnj7bha06bhb43Zpa6eWH8N8dbqVjTUc=
+k8s.io/apimachinery v0.30.1 h1:ZQStsEfo4n65yAdlGTfP/uSHMQSoYzU/oeEbkmF7P2U=
+k8s.io/apimachinery v0.30.1/go.mod h1:iexa2somDaxdnj7bha06bhb43Zpa6eWH8N8dbqVjTUc=
 k8s.io/apiserver v0.28.6 h1:SfS5v4I5UGvh0q/1rzvNwLFsK+r7YzcsixnUc0NwoEk=
 k8s.io/apiserver v0.28.6/go.mod h1:8n0aerS3kPm9usyB8B+an6/BZ5+Fa9fNqlASFdDDVwk=
 k8s.io/apiserver v0.28.8 h1:lvgyawcJFRW12oqXLydxY83nAJ5pvJJM9JX35JnKEvg=
