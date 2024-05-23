@@ -8,7 +8,7 @@ replace k8s.io/client-go => github.com/rancher/client-go v1.28.6-rancher1
 
 require (
 	github.com/prometheus/client_golang v1.19.1
-	github.com/rancher/rancher/pkg/apis v0.0.0-20240515192151-d85bb0a8c048
+	github.com/rancher/rancher/pkg/apis v0.0.0-20240523140659-64937ab41989
 	k8s.io/apimachinery v0.30.1
 	k8s.io/client-go v12.0.0+incompatible
 )
@@ -47,7 +47,7 @@ require (
 	github.com/rancher/gke-operator v1.3.0-rc6 // indirect
 	github.com/rancher/lasso v0.0.0-20240123150939-7055397d6dfa // indirect
 	github.com/rancher/norman v0.0.0-20240207153100-3bb70b772b52 // indirect
-	github.com/rancher/rke v1.6.0-rc1 // indirect
+	github.com/rancher/rke v1.6.0-rc3 // indirect
 	github.com/rancher/wrangler v1.1.1 // indirect
 	github.com/rancher/wrangler/v2 v2.1.4 // indirect
 	github.com/sirupsen/logrus v1.9.3 // indirect
